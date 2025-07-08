@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: cube-mastering-workflow-manager-poc
+server:
+  port: 8222
