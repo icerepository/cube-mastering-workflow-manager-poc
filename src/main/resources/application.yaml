@@ -3,3 +3,11 @@ spring:
     name: cube-mastering-workflow-manager-poc
 server:
   port: 8222
+app:
+  messages:
+    destination:
+      save-master-work: saveMasterQueue
+      match-work: matchWorkQueue
+      merge-work: mergeWorkQueue
+    statemachine-destination:
+      master-work-saved: masterWorkSavedQueue

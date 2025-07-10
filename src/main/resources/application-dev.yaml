@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    aws:
+      credentials:
+        access-key: mastersaga
+        secret-key: mastersaga
+      region:
+        static: eu-north-1
+      endpoint: http://sqs.eu-north-1.localhost.localstack.cloud:4566
+logging:
+  level:
+    io.awspring.cloud: info

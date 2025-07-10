@@ -1,0 +1,21 @@
+services:
+  sqs-admin-ui:
+    image: akilamaxi/sqs-admin-ui:v1
+    environment:
+      - AWS_ACCESS_KEY_ID=mastersaga
+      - AWS_SECRET_ACCESS_KEY=mastersaga
+      - AWS_REGION=eu-north-1
+      - SQS_ENDPOINT_URL=http://localstack:4566  # Pointing to the SQS service in localstack
+    ports:
+      - "8225:8080"
+    depends_on:
+      - localstack
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      - SERVICES=sqs  # Activating only the SQS service
+      - DEFAULT_REGION=eu-north-1
+      - AWS_ACCESS_KEY_ID=mastersaga
+      - AWS_SECRET_ACCESS_KEY=mastersaga
+    ports:
+      - "4566:4566"  # SQS service port

@@ -25,6 +25,7 @@ repositories {
 
 ext {
     springStatemachineVersion = '4.0.0'
+    springCloudAwsVersion = '3.4.0'
 }
 
 dependencies {
@@ -35,6 +36,11 @@ dependencies {
     //adds statemachine dependency
     implementation 'org.springframework.statemachine:spring-statemachine-starter'
 
+    // SQS Listeners to be externalized
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:${springCloudAwsVersion}")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs'
+
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.projectlombok:lombok'
