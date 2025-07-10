@@ -23,7 +23,7 @@ public class DefaultMasteringService implements MasteringService {
         StateMachine<MasteringState, MasteringEvent> stateMachine = stateMachineFactory.getStateMachine(masterRequest.requestId());
         stateMachine.sendEvent(Mono.just(
                 MessageBuilder
-                        .withPayload(MasteringEvent.SAVE_MASTER_REQUESTED)
+                        .withPayload(MasteringEvent.SAVE_MASTER_COMMAND)
                         .setHeader("workId", masterRequest.workId())
                         .setHeader("requestId", masterRequest.requestId())
                         .build()
