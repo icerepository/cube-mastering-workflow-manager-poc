@@ -1,5 +1,9 @@
 package com.iceservices.poc.workflowmgr.statemachine;
 
+import com.iceservices.poc.workflowmgr.statemachine.actions.MasterWorkSaver;
+import com.iceservices.poc.workflowmgr.statemachine.actions.WorkMatcher;
+import com.iceservices.poc.workflowmgr.statemachine.actions.WorkMerger;
+import com.iceservices.poc.workflowmgr.statemachine.data.ActionRequest;
 import com.iceservices.poc.workflowmgr.statemachine.events.MasteringEvent;
 import com.iceservices.poc.workflowmgr.statemachine.states.MasteringState;
 import com.iceservices.poc.workflowmgr.statemachine.utils.StateUtil;
@@ -18,7 +22,6 @@ import org.springframework.statemachine.listener.StateMachineListener;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.state.State;
 
-import java.time.Duration;
 import java.util.EnumSet;
 
 import static com.iceservices.poc.workflowmgr.statemachine.events.MasteringEvent.MATCH_WORK_COMMAND;
@@ -27,7 +30,8 @@ import static com.iceservices.poc.workflowmgr.statemachine.events.MasteringEvent
 import static com.iceservices.poc.workflowmgr.statemachine.states.MasteringState.INITIAL;
 import static com.iceservices.poc.workflowmgr.statemachine.states.MasteringState.MATCHED_MASTER_WORK;
 import static com.iceservices.poc.workflowmgr.statemachine.states.MasteringState.SAVED_MASTER_WORK;
-import static com.iceservices.poc.workflowmgr.utils.UtilityFunctions.tryToSleep;
+import static com.iceservices.poc.workflowmgr.utils.AppConstants.REQUEST_ID;
+import static com.iceservices.poc.workflowmgr.utils.AppConstants.WORK_ID;
 
 
 @Slf4j
@@ -37,6 +41,12 @@ import static com.iceservices.poc.workflowmgr.utils.UtilityFunctions.tryToSleep;
 public class StatemachineFactoryConfig extends EnumStateMachineConfigurerAdapter<MasteringState, MasteringEvent> {
 
     private final StateUtil stateUtil;
+
+    private final MasterWorkSaver masterWorkSaver;
+
+    private final WorkMatcher workMatcher;
+
+    private final WorkMerger workMerger;
 
     @Override
     public void configure(StateMachineConfigurationConfigurer<MasteringState, MasteringEvent> config) throws Exception {
@@ -98,8 +108,11 @@ public class StatemachineFactoryConfig extends EnumStateMachineConfigurerAdapter
     Action<MasteringState, MasteringEvent> saveMasterAction() {
         return context -> {
             log.info("...Simulating save-work-master with context {}", context);
-            tryToSleep(Duration.ofSeconds(3));
-            log.info("...work will be assumed created for simplicity");
+            boolean result = masterWorkSaver.saveMasterWork(new ActionRequest(
+                    String.valueOf(context.getMessageHeader(WORK_ID)),
+                    String.valueOf(context.getMessageHeader(REQUEST_ID))
+            ));
+            log.info("Saved master work with result {}. What do I need this result for?", result);
         };
     }
 
@@ -107,8 +120,10 @@ public class StatemachineFactoryConfig extends EnumStateMachineConfigurerAdapter
     Action<MasteringState, MasteringEvent> matchWorksAction() {
         return context -> {
             log.info("...Simulating match-works with context {}", context);
-            tryToSleep(Duration.ofSeconds(2));
-            log.info("...work matched!");
+            workMatcher.matchWork(new ActionRequest(
+                    String.valueOf(context.getMessageHeader(WORK_ID)),
+                    String.valueOf(context.getMessageHeader(REQUEST_ID))
+            ));
         };
     }
 
@@ -116,8 +131,10 @@ public class StatemachineFactoryConfig extends EnumStateMachineConfigurerAdapter
     Action<MasteringState, MasteringEvent> mergeWorksAction() {
         return context -> {
             log.info("...Simulating merge-works with context {}", context);
-            tryToSleep(Duration.ofSeconds(2));
-            log.info("...work merged!!");
+            workMerger.mergeWork(new ActionRequest(
+                    String.valueOf(context.getMessageHeader(WORK_ID)),
+                    String.valueOf(context.getMessageHeader(REQUEST_ID))
+            ));
         };
     }
 }
